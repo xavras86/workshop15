@@ -29,12 +29,10 @@ public class RandomDataService {
         Opinion opinion = opinionRepository.create(randomDataPreparationService.createOpinion(customer, product));
         Purchase purchase = purchaseRepository.create(randomDataPreparationService.createPurchase(customer, product));
 
-
         log.debug("Random customer created: [{}]", customer);
         log.debug("Random opinion created: [{}]", opinion);
         log.debug("Random producer created: [{}]", producer);
         log.debug("Random product created: [{}]", product);
         log.debug("Random purchase created: [{}]", purchase);
     }
-
 }
