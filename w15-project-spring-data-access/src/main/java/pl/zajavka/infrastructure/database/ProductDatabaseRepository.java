@@ -8,31 +8,29 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.stereotype.Repository;
 import pl.zajavka.buisness.CustomerRepository;
-import pl.zajavka.buisness.ProductRepository;
-import pl.zajavka.domain.Product;
+import pl.zajavka.buisness.ProducerRepository;
+import pl.zajavka.domain.Producer;
 import pl.zajavka.infrastructure.configuration.DatabaseConfiguration;
-
-import java.util.Map;
 
 @Slf4j
 @Repository
 @AllArgsConstructor
-public class ProductDatabaseRepository  implements ProductRepository {
-    private static final String DELETE_ALL = "DELETE FROM PRODUCT where 1=1";
+public class ProducerDatabaseRepository  implements ProducerRepository {
+    private static final String DELETE_ALL = "DELETE FROM PRODUCER where 1=1";
+
     private final SimpleDriverDataSource simpleDriverDataSource;
 
-    private final DatabaseMapper databaseMapper;
-
     @Override
-    public Product create(Product product) {
+    public Producer create(Producer producer) {
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(simpleDriverDataSource)
-                .withTableName(DatabaseConfiguration.PRODUCT_TABLE)
-                .usingGeneratedKeyColumns(DatabaseConfiguration.PRODUCT_TABLE_PKEY.toLowerCase());
+                .withTableName(DatabaseConfiguration.PRODUCER_TABLE)
+                .usingGeneratedKeyColumns(DatabaseConfiguration.PRODUCER_TABLE_PKEY.toLowerCase());
 
-        Map<String, ?> params = databaseMapper.mapProduct(product);
-        Number productId = jdbcInsert.executeAndReturnKey(params);
-        return product.withId((long) productId.intValue());
+//        jdbcInsert.setGeneratedKeyName("id");
+        Number producerId = jdbcInsert.executeAndReturnKey(new BeanPropertySqlParameterSource(producer));
+        return producer.withId((long) producerId.intValue());
+
     }
 
     @Override

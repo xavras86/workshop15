@@ -10,4 +10,8 @@ public interface CustomerRepository {
     Customer create(Customer customer);
 
     void removeAll();
+
+
+    void remove(String email);
+
 }
