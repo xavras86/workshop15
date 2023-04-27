@@ -7,16 +7,22 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.stereotype.Repository;
-import pl.zajavka.buisness.CustomerRepository;
 import pl.zajavka.buisness.ProducerRepository;
 import pl.zajavka.domain.Producer;
 import pl.zajavka.infrastructure.configuration.DatabaseConfiguration;
 
+import java.util.List;
+
 @Slf4j
 @Repository
 @AllArgsConstructor
-public class ProducerDatabaseRepository  implements ProducerRepository {
+public class ProducerDatabaseRepository implements ProducerRepository {
+
+    private static final String SELECT_ALL = "SELECT * FROM PRODUCER";
+
     private static final String DELETE_ALL = "DELETE FROM PRODUCER where 1=1";
+
+    private final DatabaseMapper databaseMapper;
 
     private final SimpleDriverDataSource simpleDriverDataSource;
 
@@ -30,13 +36,15 @@ public class ProducerDatabaseRepository  implements ProducerRepository {
 //        jdbcInsert.setGeneratedKeyName("id");
         Number producerId = jdbcInsert.executeAndReturnKey(new BeanPropertySqlParameterSource(producer));
         return producer.withId((long) producerId.intValue());
-
     }
-
     @Override
     public void removeAll() {
 
         new JdbcTemplate(simpleDriverDataSource).update(DELETE_ALL);
-
+    }
+    @Override
+    public List<Producer> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapProducer);
     }
 }

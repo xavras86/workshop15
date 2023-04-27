@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.zajavka.domain.*;
 
-import java.util.Collections;
-
 @Slf4j
 @Service
 @AllArgsConstructor

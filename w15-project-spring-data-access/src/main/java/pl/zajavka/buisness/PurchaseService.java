@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.zajavka.domain.Purchase;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -34,12 +33,21 @@ public class PurchaseService {
 
     public List<Purchase> findAll(String email) {
         return purchaseRepository.findAll(email);
-
-
-
     }
 
     public List<Purchase> findAll(String email, String productCode) {
         return purchaseRepository.findAll(email, productCode);
+    }
+
+    public List<Purchase> findAll() {
+        return purchaseRepository.findAll();
+    }
+
+    public List<Purchase> findAllByProductCode(String productCode) {
+        return purchaseRepository.findAllByProductCode(productCode);
+    }
+
+    public void removeAllByProductCode(String productCode) {
+        purchaseRepository.removeAllByProductCode(  productCode);
     }
 }
