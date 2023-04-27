@@ -77,3 +77,9 @@ CREATE TABLE opinion
         FOREIGN KEY (product_id)
             REFERENCES product (id)
 );
+
+alter sequence customer_id_seq restart with 1101;
+alter sequence producer_id_seq restart with 121;
+alter sequence product_id_seq restart with 151;
+alter sequence purchase_id_seq restart with 1001;
+alter sequence opinion_id_seq restart with 11141;

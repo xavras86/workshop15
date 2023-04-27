@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.zajavka.domain.Customer;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +33,12 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer with email [%s] is missing".formatted(email)));
     }
 
+    public List<Customer> findAll() {
+        return customerRepository.findAll();
+
+    }
+
+
     @Transactional
     public void remove(String email) {
         Customer existingCustomer = find(email);
@@ -41,7 +47,7 @@ public class CustomerService {
         opinionService.removeAll(email);
         purchaseService.removeAll(email);
 
-        if(isOlderThan40(existingCustomer)) {
+        if (isOlderThan40(existingCustomer)) {
             throw new RuntimeException(
                     "Could now remove cutomer because he/she is older than 40, email: [%s]".formatted(email));
         }
@@ -50,10 +56,21 @@ public class CustomerService {
     }
 
     private boolean isOlderThan40(Customer existingCustomer) {
-        return LocalDate.now().getYear() - existingCustomer.getDateOfBirth().getYear() >40;
+        return LocalDate.now().getYear() - existingCustomer.getDateOfBirth().getYear() > 40;
     }
 
+@Transactional
+    public void removeUnwantedCustomers() {
 
+        List<Customer> customers = customerRepository.findAll().stream()
+                .filter(customer -> !isOlderThan40(customer))
+                .filter(customer -> opinionService.customerGivesUnwantedOpinions(customer.getEmail()))
+                .toList();
+
+        customers.forEach(customer -> remove(customer.getEmail()));
+
+
+    }
 }
 
 

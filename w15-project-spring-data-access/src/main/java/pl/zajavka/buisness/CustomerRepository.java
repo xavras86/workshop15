@@ -2,6 +2,7 @@ package pl.zajavka.buisness;
 
 import pl.zajavka.domain.Customer;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository {
@@ -14,4 +15,6 @@ public interface CustomerRepository {
 
     void remove(String email);
 
+
+    List<Customer> findAll();
 }

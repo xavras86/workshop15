@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Random;
 import java.util.stream.IntStream;
+
 @Service
 public class RandomDataPreparationService {
     Customer createCustomer() {
@@ -35,14 +36,14 @@ public class RandomDataPreparationService {
 
     Producer createProducer() {
         return Producer.builder()
-                .producerName(randomString(65,90,1) + randomString(97,122,10))
+                .producerName(randomString(65, 90, 1) + randomString(97, 122, 10))
                 .address("someAddress")
                 .build();
     }
 
     Product createProduct(Producer producer) {
         return Product.builder()
-                .productCode( randomString(65, 90, 3) + randomString(97, 122, 4) + randomString(48, 57, 2))
+                .productCode(randomString(65, 90, 3) + randomString(97, 122, 4) + randomString(48, 57, 2))
                 .productName("productName")
                 .productPrice(BigDecimal.valueOf(162.16))
                 .adultsOnly(false)

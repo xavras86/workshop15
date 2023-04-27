@@ -8,16 +8,31 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.stereotype.Repository;
 import pl.zajavka.buisness.PurchaseRepository;
+import pl.zajavka.domain.Customer;
+import pl.zajavka.domain.Opinion;
 import pl.zajavka.domain.Purchase;
 import pl.zajavka.infrastructure.configuration.DatabaseConfiguration;
 
 import java.util.List;
 import java.util.Map;
 
+
 @Slf4j
 @Repository
 @AllArgsConstructor
 public class PurchaseDatabaseRepository  implements PurchaseRepository {
+    private static final String SELECT_ALL = "SELECT * FROM PURCHASE";
+    private static final String SELECT_ALL_BY_PRODUCT_CODE = """
+            SELECT * FROM PURCHASE AS PUR
+            INNER JOIN PRODUCT AS PRD ON PRD.ID = PUR.PRODUCT_ID
+            WHERE PRD.PRODUCT_CODE = :productCode
+            ORDER BY DATE_TIME
+            """;
+    private static final String DETELE_ALL_BY_PRODUCT_CODE = """
+            DELETE FROM PURCHASE 
+            WHERE PRODUCT_ID IN (SELECT ID FROM PRODUCT WHERE PRODUCT_CODE = :productCode) 
+            """;
+    private final DatabaseMapper databaseMapper;
     private static final String DELETE_ALL = "DELETE FROM PURCHASE where 1=1";
     private static final String DELETE_ALL_WHERE_CUSTOMER_EMAIL
             = "DELETE FROM PURCHASE WHERE CUSTOMER_ID IN (SELECT ID FROM CUSTOMER WHERE EMAIL = :email)";
@@ -32,14 +47,14 @@ public class PurchaseDatabaseRepository  implements PurchaseRepository {
     private static final String SELECT_ALL_WHERE_CUSTOMER_EMAIL_AND_PRODUCT_CODE = """
              SELECT * FROM PURCHASE AS PUR
                   INNER JOIN CUSTOMER AS CUS ON CUS.ID = PUR.CUSTOMER_ID
-                  INNER JOIN PRODUCT AS PROD = PROD.ID = PUR.PRODUCT_ID
+                  INNER JOIN PRODUCT AS PROD ON PROD.ID = PUR.PRODUCT_ID
                   WHERE CUS.EMAIL = :email
                   AND PROD.PRODUCT_CODE = :productCode
                   ORDER BY DATE_TIME
             """;
 
     private final SimpleDriverDataSource simpleDriverDataSource;
-    private final DatabaseMapper databaseMapper;
+
 
     @Override
     public Purchase create(Purchase purchase) {
@@ -78,6 +93,24 @@ public class PurchaseDatabaseRepository  implements PurchaseRepository {
         return jdbcTemplate.query(
                 SELECT_ALL_WHERE_CUSTOMER_EMAIL_AND_PRODUCT_CODE,
                 Map.of("email", email, "productCode", productCode), databaseMapper::mapPurchase);
-
     }
+    @Override
+    public List<Purchase> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL, databaseMapper::mapPurchase);
+    }
+
+    @Override
+    public List<Purchase> findAllByProductCode(String productCode) {
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
+        return jdbcTemplate.query(SELECT_ALL_BY_PRODUCT_CODE, Map.of("productCode", productCode), databaseMapper::mapPurchase);
+    }
+
+    @Override
+    public void removeAllByProductCode(String productCode) {
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(simpleDriverDataSource);
+        jdbcTemplate.update(DETELE_ALL_BY_PRODUCT_CODE, Map.of("productCode", productCode));
+    }
+
+
 }

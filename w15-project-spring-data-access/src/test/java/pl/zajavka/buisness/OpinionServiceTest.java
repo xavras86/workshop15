@@ -49,10 +49,7 @@ class OpinionServiceTest {
         //then
         verify(opinionRepository).create(opinion);
         Assertions.assertEquals(opinion.withId(10L), result);
-
-
     }
-
     @Test
     @DisplayName("polecenia 5 cz.2")
     void thatOpinionCanBeCreatedForProductThatCustomerDidNodBought() {

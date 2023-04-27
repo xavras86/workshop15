@@ -1,11 +1,9 @@
 package pl.zajavka.infrastructure.database;
 
 import org.springframework.stereotype.Component;
-import pl.zajavka.domain.Customer;
-import pl.zajavka.domain.Opinion;
-import pl.zajavka.domain.Product;
-import pl.zajavka.domain.Purchase;
+import pl.zajavka.domain.*;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -89,4 +87,27 @@ public class DatabaseMapper {
                 .build();
     }
 
+    @SuppressWarnings("unused")
+    public Product mapProduct(ResultSet resultSet, int rowNum) throws SQLException {
+        return Product.builder()
+                .id(resultSet.getLong("id"))
+                .productCode(resultSet.getString("product_name"))
+                .productName(resultSet.getString("product_name"))
+                .productPrice(resultSet.getBigDecimal("product_price"))
+                .adultsOnly(resultSet.getBoolean("adults_only"))
+                .description(resultSet.getString("description"))
+                .producer(Producer.builder().id(resultSet.getLong("producer_id")).build())
+                .build();
+
+
+    }
+
+    @SuppressWarnings("unused")
+    public Producer mapProducer(ResultSet resultSet, int rowNum) throws SQLException {
+        return Producer.builder()
+                .id(resultSet.getLong("id"))
+                .producerName(resultSet.getString("producer_name"))
+                .address(resultSet.getString("address"))
+                .build();
+    }
 }

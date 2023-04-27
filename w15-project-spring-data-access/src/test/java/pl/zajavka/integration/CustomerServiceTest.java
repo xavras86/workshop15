@@ -112,8 +112,22 @@ public class CustomerServiceTest {
                 ),
                 opinionService.findAll(customer.getEmail())
         );
+    }
 
+    @Test
+    @DisplayName("Polecenie8")
+    void thatCustomersGivingUnwantedOpinionsAreRemoved() {
+        //given
+        reloadDataService.reloadData();
+        assertEquals(100, customerService.findAll().size());
 
+        //when
+
+        customerService.removeUnwantedCustomers();
+
+        //then
+
+        assertEquals(64, customerService.findAll().size());
     }
 
 }
